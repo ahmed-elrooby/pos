@@ -1,5 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import AdminContext from "./Provider/AdminProvider/AdminContext";
+import QueryProvider from "./Provider/QueryProvider/Query";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +22,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <QueryProvider>
+        <AdminContext>
+{children}
+        </AdminContext>
+        </QueryProvider>
+<Toaster/>
+        </body>
     </html>
   );
 }

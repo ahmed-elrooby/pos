@@ -1,9 +1,9 @@
 import React from 'react'
-import Buy from '../components/Buy/Buy'
+import Home from './Component/Home/Home'
 
 const page = () => {
   return <>
-  <Buy/>
+  <Home />
   </>
 }
 
