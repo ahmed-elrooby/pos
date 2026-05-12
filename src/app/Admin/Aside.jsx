@@ -17,7 +17,7 @@ import {
 
 const Sidebar = () => {
   return (
-    <aside className="w-80 relative bg-[#0f0f0f] text-white shadow-2xl z-20 flex-shrink-0 overflow-y-auto rounded-l-3xl">
+    <aside className="w-72 relative bg-[radial-gradient(circle_at_0%_0%,#0b1120_0%,#0f1724_100%)] text-white shadow-2xl z-20 flex-shrink-0 overflow-y-auto">
 
       {/* Top */}
       <div className="p-7 border-b border-white/10 flex items-center gap-3">
