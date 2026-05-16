@@ -1,5 +1,6 @@
 "use client";
 
+import { Admin } from "@/app/Provider/AdminProvider/AdminContext";
 import {
   Gem,
   ClipboardList,
@@ -9,23 +10,34 @@ import {
   PackageOpen,
   ArrowUp,
 } from "lucide-react";
+import { useContext } from "react";
 
-const stats = [
-  {
-    title: "إجمالي المنتجات",
-    value: "2,345",
-    icon: Gem,
-    color: "text-cyan-400",
-    bg: "bg-cyan-500/10",
-    border: "border-cyan-500/20",
-    shadow: "shadow-[0_10px_40px_rgba(34,211,238,0.08)]",
-    status: "+14%",
-    statusColor: "text-green-400",
-  },
+
+
+const StatsCards = () => {
+  const {Product, Orders,Suppliers,StockCounts} = useContext(Admin)
+  console.log(StockCounts)
+const profits = Orders?.data?.reduce(
+  (acc, order) => acc + Number(order.profit),
+  0
+);
+  console.log(profits)
+  const stats = [
+{
+  title: "إجمالي الإنتاج",
+  value: Product?.data?.length,
+  icon: Gem,
+  color: "text-cyan-400",
+  bg: "bg-cyan-500/10",
+  border: "border-cyan-500/20",
+  shadow: "shadow-[0_10px_40px_rgba(34,211,238,0.08)]",
+  status: "عمليات إنتاج مكتملة",
+  statusColor: "text-green-400",
+},
 
   {
     title: "إجمالي الطلبات",
-    value: "872",
+    value: Orders?.data?.length || 0,
     icon: ClipboardList,
     color: "text-violet-400",
     bg: "bg-violet-500/10",
@@ -37,7 +49,7 @@ const stats = [
 
   {
     title: "الموردين",
-    value: "142",
+    value: Suppliers?.data?.length || 0,
     icon: Truck,
     color: "text-amber-400",
     bg: "bg-amber-500/10",
@@ -49,7 +61,7 @@ const stats = [
 
   {
     title: "إجمالي المبيعات",
-    value: "229K$",
+    value: `${profits || 0} ريال`,
     icon: ChartColumn,
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
@@ -61,7 +73,7 @@ const stats = [
 
   {
     title: "منخفضة المخزون",
-    value: "18",
+    value: StockCounts?.data?.length || 0,
     icon: PackageOpen,
     color: "text-rose-400",
     bg: "bg-rose-500/10",
@@ -71,20 +83,7 @@ const stats = [
     statusColor: "text-red-400",
   },
 
-  {
-    title: "الأرباح الشهرية",
-    value: "54.8K$",
-    icon: ArrowUp,
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-    border: "border-orange-500/20",
-    shadow: "shadow-[0_10px_40px_rgba(249,115,22,0.08)]",
-    status: "+32%",
-    statusColor: "text-orange-300",
-  },
 ];
-
-const StatsCards = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
 

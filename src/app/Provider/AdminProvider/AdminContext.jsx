@@ -1,5 +1,6 @@
+
 "use client"
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import Cookies from "js-cookie";
 import { useRouter } from 'next/navigation';
@@ -25,9 +26,10 @@ const handleLoginMutation = useMutation({
     mutationKey: ["login"],
     mutationFn: handleLogin,
     onSuccess: (data) => {
+
     Cookies.set("token",data.data.token)
     toast.success(data.message || "تم تسجيل الدخول بنجاح")
-    router.push("/Dashboard")
+    router.push("/Admin")
 
     },onError: (error) => {
         toast.error(error?.response?.data?.message || "خطأ في تسجيل الدخول")
@@ -39,7 +41,108 @@ const handleLoginFinal = (values) => {
     handleLoginMutation.mutate(values)
 }
 
-  return <Admin.Provider value={{handleLoginFinal}}>
+
+
+// ==================================== START PRODUCTS ====================================
+const getProduct = async () =>{
+    try{
+     const {data} = await axios.get(`${baseurl}/productions`,
+        {
+            headers:{
+                Authorization:`Bearer ${Cookies.get("token")}`
+            }
+        }
+     )
+         return data?.data
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+const {data:Product} = useQuery({
+  queryKey:["Product"],
+  queryFn:getProduct
+})
+// ==================================== END PRODUCTS ====================================
+
+
+// ====================================  Start Orders ====================================
+const getOrders = async () =>{
+    try{
+     const {data} = await axios.get(`${baseurl}/orders`,
+        {
+            headers:{
+                Authorization:`Bearer ${Cookies.get("token")}`
+            }
+        }
+     )
+         return data?.data
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+const {data:Orders} = useQuery({
+  queryKey:["Orders"],
+  queryFn:getOrders
+})
+// ==================================== END Orders ====================================
+
+
+
+// ==================================== Start Suppliers ====================================
+const getSuppliers = async () =>{
+    try{
+     const {data} = await axios.get(`${baseurl}/suppliers`,
+        {
+            headers:{
+                Authorization:`Bearer ${Cookies.get("token")}`
+            }
+        }
+     )
+         return data?.data
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+const {data:Suppliers} = useQuery({
+  queryKey:["Suppliers"],
+  queryFn:getSuppliers
+})
+// ==================================== END Suppliers ====================================
+
+
+
+// ==================================== Start stock-counts ====================================
+const getStockCounts = async () =>{
+    try{
+     const {data} = await axios.get(`${baseurl}/stock-counts`,
+        {
+            headers:{
+                Authorization:`Bearer ${Cookies.get("token")}`
+            }
+        }
+     )
+         return data?.data
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+const {data:StockCounts} = useQuery({
+  queryKey:["StockCounts"],
+  queryFn:getStockCounts
+})
+  return <Admin.Provider value={{handleLoginFinal,Product,Orders,Suppliers,StockCounts }}>
   {children}
   
   </Admin.Provider>
