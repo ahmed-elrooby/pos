@@ -69,6 +69,7 @@ const {data:Product} = useQuery({
 
 
 // ====================================  Start Orders ====================================
+
 const getOrders = async () =>{
     try{
      const {data} = await axios.get(`${baseurl}/orders`,
@@ -142,7 +143,33 @@ const {data:StockCounts} = useQuery({
   queryKey:["StockCounts"],
   queryFn:getStockCounts
 })
-  return <Admin.Provider value={{handleLoginFinal,Product,Orders,Suppliers,StockCounts }}>
+// ==================================== Start Purchases ====================================
+const getPurchases = async () =>{
+    try{
+     const {data} = await axios.get(`${baseurl}/purchases`,
+        {
+            headers:{
+                Authorization:`Bearer ${Cookies.get("token")}`
+            }
+        }
+     )
+         return data?.data
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+const {data:Purchases} = useQuery({
+  queryKey:["Purchases"],
+  queryFn:getPurchases
+})
+// ==================================== Start Purchases ====================================
+
+
+
+  return <Admin.Provider value={{handleLoginFinal,Product,Orders,Suppliers,StockCounts,Purchases }}>
   {children}
   
   </Admin.Provider>

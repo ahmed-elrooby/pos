@@ -16,7 +16,6 @@ import { useContext } from "react";
 
 const StatsCards = () => {
   const {Product, Orders,Suppliers,StockCounts} = useContext(Admin)
-  console.log(StockCounts)
 const profits = Orders?.data?.reduce(
   (acc, order) => acc + Number(order.profit),
   0

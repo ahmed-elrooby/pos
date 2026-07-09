@@ -6,8 +6,9 @@ import PurchaseCharts from '../Utils/Purchases/Chart'
 const Purchases = () => {
   return <>
   <StatsCards/>
+    <PurchaseCharts/>
+
   <PurchaseOrders/>
-  <PurchaseCharts/>
   </>
 }
 

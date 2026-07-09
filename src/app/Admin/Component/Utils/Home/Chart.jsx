@@ -1,5 +1,6 @@
 "use client";
 
+import { useContext, useMemo } from "react";
 import {
   ChartBar,
   ChartPie,
@@ -20,108 +21,155 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const salesData = [
-  { name: "يناير", sales: 4000 },
-  { name: "فبراير", sales: 3000 },
-  { name: "مارس", sales: 5000 },
-  { name: "أبريل", sales: 4780 },
-  { name: "مايو", sales: 5890 },
-];
+import { Admin } from "@/app/Provider/AdminProvider/AdminContext";
 
-const pieData = [
-  { name: "ذهب", value: 400 },
-  { name: "ألماس", value: 300 },
-  { name: "فضة", value: 200 },
-];
-
-const lineData = [
-  { name: "يناير", profit: 2400 },
-  { name: "فبراير", profit: 3200 },
-  { name: "مارس", profit: 2800 },
-  { name: "أبريل", profit: 4500 },
-  { name: "مايو", profit: 5200 },
-];
-
-const COLORS = ["#f59e0b", "#d97706", "#92400e"];
+const COLORS = ["#f59e0b", "#d97706", "#92400e", "#fbbf24", "#78350f"];
 
 const ChartsSection = () => {
+  const { Suppliers, Orders, StockCounts } = useContext(Admin);
+
+  // =============================
+  // ✅ SAFE DATA
+  // =============================
+  const suppliersList = Suppliers?.data || [];
+  const ordersList = Orders?.data || [];
+  const stockList = StockCounts?.data || [];
+
+  // =============================
+  // 📊 BAR DATA (Counts)
+  // =============================
+  const barData = useMemo(() => {
+    return [
+      { name: "الموردين", value: suppliersList.length },
+      { name: "الطلبات", value: ordersList.length },
+      { name: "المخزون", value: stockList.length },
+    ];
+  }, [suppliersList, ordersList, stockList]);
+
+  // =============================
+  // 🥧 PIE DATA (Suppliers by Address)
+  // =============================
+  const pieData = useMemo(() => {
+    if (!suppliersList.length) return [];
+
+    const map = {};
+
+    suppliersList.forEach((item) => {
+      const key = item.address?.trim() || "غير محدد";
+      map[key] = (map[key] || 0) + 1;
+    });
+
+    return Object.entries(map).map(([key, value]) => ({
+      name: key,
+      value,
+    }));
+  }, [suppliersList]);
+
+  // =============================
+  // 📈 LINE DATA (Simple growth simulation)
+  // =============================
+  const lineData = useMemo(() => {
+    const base = suppliersList.length;
+
+    return [
+      { name: "Week 1", value: base * 0.2 },
+      { name: "Week 2", value: base * 0.5 },
+      { name: "Week 3", value: base * 0.8 },
+      { name: "Week 4", value: base },
+    ];
+  }, [suppliersList]);
+
+  // =============================
+  // 📌 TOTAL
+  // =============================
+  const totalSystem =
+    suppliersList.length + ordersList.length + stockList.length;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-7 mb-10">
 
-      {/* Bar Chart */}
-      <div className="bg-[radial-gradient(circle_at_0%_0%,#0b1120_0%,#0f1724_100%)] border border-amber-500/20 rounded-3xl p-6 shadow-[0_10px_40px_rgba(245,158,11,0.08)] backdrop-blur-2xl">
+      {/* ================= BAR CHART ================= */}
+      <div className="bg-[radial-gradient(circle_at_0%_0%,#0b1120_0%,#0f1724_100%)] border border-amber-500/20 rounded-3xl p-6">
 
         <div className="flex items-center gap-3 mb-4">
-
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-            <ChartBar className="w-5 h-5" />
-          </div>
-
-          <h3 className="font-black text-white">
-            المبيعات المتصاعدة
+          <ChartBar className="w-5 h-5 text-amber-400" />
+          <h3 className="text-white font-bold">
+            مقارنة النظام
           </h3>
         </div>
 
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={salesData}>
+          <BarChart data={barData}>
             <XAxis dataKey="name" stroke="#9ca3af" />
             <YAxis stroke="#9ca3af" />
+
             <Tooltip
               contentStyle={{
-                backgroundColor: "#1b1206",
+                backgroundColor: "#111827",
+                borderRadius: "10px",
                 border: "1px solid #f59e0b33",
                 color: "#fff",
               }}
             />
-            <Bar dataKey="sales" fill="#f59e0b" radius={[10, 10, 0, 0]} />
+
+            <Bar
+              dataKey="value"
+              fill="#f59e0b"
+              radius={[10, 10, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Pie Chart */}
-      <div className="bg-[radial-gradient(circle_at_0%_0%,#0b1120_0%,#0f1724_100%)] border border-amber-500/20 rounded-3xl p-6 shadow-[0_10px_40px_rgba(245,158,11,0.08)] backdrop-blur-2xl">
+      {/* ================= PIE CHART ================= */}
+      <div className="relative bg-[radial-gradient(circle_at_0%_0%,#0b1120_0%,#0f1724_100%)] border border-amber-500/20 rounded-3xl p-6">
 
         <div className="flex items-center gap-3 mb-4">
-
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-            <ChartPie className="w-5 h-5" />
-          </div>
-
-          <h3 className="font-black text-white">
-            توزيع المخزون الذهبي
+          <ChartPie className="w-5 h-5 text-amber-400" />
+          <h3 className="text-white font-bold">
+            توزيع الموردين حسب المنطقة
           </h3>
         </div>
 
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>
-            <Pie data={pieData} dataKey="value" outerRadius={90} label>
+            <Pie
+              data={pieData}
+              dataKey="value"
+              outerRadius={90}
+              innerRadius={55}
+              paddingAngle={4}
+            >
               {pieData.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                <Cell
+                  key={index}
+                  fill={COLORS[index % COLORS.length]}
+                />
               ))}
             </Pie>
 
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1b1206",
-                border: "1px solid #f59e0b33",
-                color: "#fff",
-              }}
-            />
+            <Tooltip />
           </PieChart>
         </ResponsiveContainer>
+
+        {/* ================= CENTER TOTAL ================= */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-white text-3xl font-bold">
+            {suppliersList.length} {/* ✅ هنا = 5 */}
+          </span>
+          <span className="text-gray-400 text-xs">
+            إجمالي الموردين
+          </span>
+        </div>
       </div>
 
-      {/* Line Chart */}
-      <div className="bg-[radial-gradient(circle_at_0%_0%,#0b1120_0%,#0f1724_100%)] border border-amber-500/20 rounded-3xl p-6 shadow-[0_10px_40px_rgba(245,158,11,0.08)] backdrop-blur-2xl">
+      {/* ================= LINE CHART ================= */}
+      <div className="bg-[radial-gradient(circle_at_0%_0%,#0b1120_0%,#0f1724_100%)] border border-amber-500/20 rounded-3xl p-6">
 
         <div className="flex items-center gap-3 mb-4">
-
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-            <ChartLine className="w-5 h-5" />
-          </div>
-
-          <h3 className="font-black text-white">
-            نمو الأرباح
+          <ChartLine className="w-5 h-5 text-amber-400" />
+          <h3 className="text-white font-bold">
+            نمو الموردين
           </h3>
         </div>
 
@@ -129,22 +177,17 @@ const ChartsSection = () => {
           <LineChart data={lineData}>
             <XAxis dataKey="name" stroke="#9ca3af" />
             <YAxis stroke="#9ca3af" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1b1206",
-                border: "1px solid #f59e0b33",
-                color: "#fff",
-              }}
-            />
+
+            <Tooltip />
+
             <Line
               type="monotone"
-              dataKey="profit"
+              dataKey="value"
               stroke="#f59e0b"
               strokeWidth={3}
             />
           </LineChart>
         </ResponsiveContainer>
-
       </div>
 
     </div>

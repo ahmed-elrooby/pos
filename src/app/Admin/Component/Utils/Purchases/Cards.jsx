@@ -1,5 +1,6 @@
 "use client";
 
+import { Admin } from "@/app/Provider/AdminProvider/AdminContext";
 import {
   TrendingUp,
   FileText,
@@ -7,8 +8,11 @@ import {
   CheckCircle,
   ChartNoAxesCombined,
 } from "lucide-react";
+import { useContext } from "react";
 
 const StatsCards = () => {
+  const {Purchases} = useContext(Admin);
+  console.log(Purchases)
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
       
